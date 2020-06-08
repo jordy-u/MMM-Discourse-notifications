@@ -4,7 +4,7 @@
   "description": "A MagicMirror module that shows your notifications for websites that use the Discourse platform.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npx eslint *.js"
   },
   "repository": {
     "type": "git",
@@ -24,5 +24,8 @@
   "bugs": {
     "url": "https://github.com/jordy-u/MMM-Discourse-notifications/issues"
   },
-  "homepage": "https://github.com/jordy-u/MMM-Discourse-notifications#readme"
+  "homepage": "https://github.com/jordy-u/MMM-Discourse-notifications#readme",
+  "devDependencies": {
+    "eslint": "^7.2.0"
+  }
 }
