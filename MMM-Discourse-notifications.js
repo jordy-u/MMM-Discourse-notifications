@@ -1,3 +1,4 @@
+/* global Module */
 Module.register("MMM-Discourse-notifications", {
 	defaults: {
 		UserApiKey: "Not defined"
@@ -15,13 +16,13 @@ Module.register("MMM-Discourse-notifications", {
 	notificationReceived: function(notification, payload, sender) {
 		console.log("notification: " + notification);
 		switch(notification) {
-			case "DOM_OBJECTS_CREATED":
-				//Do stuff
-				var timer = setInterval(()=>{
-					this.sendSocketNotification("DO_YOUR_JOB", this.count);
-					this.count++;
-				}, 5000);
-				break;
+		case "DOM_OBJECTS_CREATED":
+			//Do stuff
+			var timer = setInterval(()=>{
+				this.sendSocketNotification("DO_YOUR_JOB", this.count);
+				this.count++;
+			}, 5000);
+			break;
 		}
 	},
 
@@ -29,12 +30,12 @@ Module.register("MMM-Discourse-notifications", {
 		console.log("socketNotificationReceived: " + notification);
 
 		switch(notification) {
-			case "I_DID":
-				//Do stuff
-				console.log("Recieved: I_DID");
-				break;
+		case "I_DID":
+			//Do stuff
+			console.log("Recieved: I_DID");
+			break;
 		}
 	},
 
-})
+});
 
