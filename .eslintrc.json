@@ -3,9 +3,16 @@
         "browser": true,
         "commonjs": true,
         "es2020": true,
-        "node": true
+        "node": true,
+        "jasmine": true
     },
-    "extends": "eslint:recommended",
+    "extends": [
+        "eslint:recommended",
+        "plugin:jasmine/recommended"
+    ],
+    "plugins": [
+        "jasmine"
+    ],
     "parserOptions": {
         "ecmaVersion": 11
     },
