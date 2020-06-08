@@ -1,0 +1,28 @@
+{
+  "name": "mmm-discourse-notifications",
+  "version": "1.0.0",
+  "description": "A MagicMirror module that shows your notifications for websites that use the Discourse platform.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jordy-u/MMM-Discourse-notifications.git"
+  },
+  "keywords": [
+    "MMM",
+    "MagicMirror",
+    "module",
+    "Discourse",
+    "Magic",
+    "Mirror",
+    "Notifications"
+  ],
+  "author": "Jordy Ubink & João Rocha",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jordy-u/MMM-Discourse-notifications/issues"
+  },
+  "homepage": "https://github.com/jordy-u/MMM-Discourse-notifications#readme"
+}
