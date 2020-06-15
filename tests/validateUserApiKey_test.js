@@ -30,7 +30,7 @@ describe("The API key validator", function() {
 
 	});
 
-	describe("Checks for lowercase hexadecimals. (spaces on the side must be trimmed)", function() {
+	describe("Checks for hexadecimals. (spaces on the side must be trimmed)", function() {
 
 		it("should return false when the key is not in HEX.", function () {
 
@@ -55,29 +55,6 @@ describe("The API key validator", function() {
 			expect(result.error).toBe(apiKeyError.KEY_IS_NOT_ONLY_LOWERCASE_HEXADECIMALS);
 
 			result = ApiKeyChecker.checkDiscourseApiKey("000000000000000t0");
-			expect(result.success).toBe(false);
-			expect(result.error).toBe(apiKeyError.KEY_IS_NOT_ONLY_LOWERCASE_HEXADECIMALS);
-		});
-
-		it("should return false when the key is not in lowercase.", function () {
-
-			let result = ApiKeyChecker.checkDiscourseApiKey("AEFABBC394030AEFABBC3940309286BE");
-			expect(result.success).toBe(false);
-			expect(result.error).toBe(apiKeyError.KEY_IS_NOT_ONLY_LOWERCASE_HEXADECIMALS);
-
-			result = ApiKeyChecker.checkDiscourseApiKey("AEFaBBC394030aefABBC3940309286BE");
-			expect(result.success).toBe(false);
-			expect(result.error).toBe(apiKeyError.KEY_IS_NOT_ONLY_LOWERCASE_HEXADECIMALS);
-
-			result = ApiKeyChecker.checkDiscourseApiKey("aAbBcDeEfF12345678900987654321");
-			expect(result.success).toBe(false);
-			expect(result.error).toBe(apiKeyError.KEY_IS_NOT_ONLY_LOWERCASE_HEXADECIMALS);
-
-			result = ApiKeyChecker.checkDiscourseApiKey("ABC");
-			expect(result.success).toBe(false);
-			expect(result.error).toBe(apiKeyError.KEY_IS_NOT_ONLY_LOWERCASE_HEXADECIMALS);
-
-			result = ApiKeyChecker.checkDiscourseApiKey("1234567890123456789012345678900A");
 			expect(result.success).toBe(false);
 			expect(result.error).toBe(apiKeyError.KEY_IS_NOT_ONLY_LOWERCASE_HEXADECIMALS);
 		});
@@ -156,6 +133,30 @@ describe("The API key validator", function() {
 			expect(result.error).toBe(apiKeyError.KEY_IS_NOT_ONLY_LOWERCASE_HEXADECIMALS);
 
 			result = ApiKeyChecker.checkDiscourseApiKey(" 0123456789abcdef0123456789abcdef");
+			expect(result.success).toBe(false);
+			expect(result.error).toBe(apiKeyError.KEY_IS_NOT_ONLY_LOWERCASE_HEXADECIMALS);
+
+		});
+
+		it("should return true when the key has a valid syntax. Uppercase keys should be accepted as well and converted to lowercase.", function () {
+
+			let result = ApiKeyChecker.checkDiscourseApiKey("AEFABBC394030AEFABBC3940309286BE");
+			expect(result.success).toBe(false);
+			expect(result.error).toBe(apiKeyError.KEY_IS_NOT_ONLY_LOWERCASE_HEXADECIMALS);
+
+			result = ApiKeyChecker.checkDiscourseApiKey("AEFaBBC394030aefABBC3940309286BE");
+			expect(result.success).toBe(false);
+			expect(result.error).toBe(apiKeyError.KEY_IS_NOT_ONLY_LOWERCASE_HEXADECIMALS);
+
+			result = ApiKeyChecker.checkDiscourseApiKey("        aAbBcDeEfF12345678900987654321    ");
+			expect(result.success).toBe(false);
+			expect(result.error).toBe(apiKeyError.KEY_IS_NOT_ONLY_LOWERCASE_HEXADECIMALS);
+
+			result = ApiKeyChecker.checkDiscourseApiKey("ABC   ");
+			expect(result.success).toBe(false);
+			expect(result.error).toBe(apiKeyError.KEY_IS_NOT_ONLY_LOWERCASE_HEXADECIMALS);
+
+			result = ApiKeyChecker.checkDiscourseApiKey(" 1234567890123456789012345678900A");
 			expect(result.success).toBe(false);
 			expect(result.error).toBe(apiKeyError.KEY_IS_NOT_ONLY_LOWERCASE_HEXADECIMALS);
 
