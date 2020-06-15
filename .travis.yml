@@ -1,0 +1,7 @@
+language: node_js
+node_js:
+  - "12"
+
+#To test with Karma, we need chrome. We don't use Karma in Travis-CI, because it gives a 'module undefined' error and we don't know an easy way to fix that.
+#addons:
+#  chrome: stable
