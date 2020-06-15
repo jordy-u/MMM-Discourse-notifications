@@ -4,7 +4,7 @@
   "description": "A MagicMirror module that shows your notifications for websites that use the Discourse platform.",
   "main": "index.js",
   "scripts": {
-    "test": "karma start --single-run && npx eslint *.js"
+    "test": "npx eslint *.js"
   },
   "repository": {
     "type": "git",
