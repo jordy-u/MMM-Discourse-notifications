@@ -12,20 +12,30 @@ module.exports =
 					"accept" : "application/json",
 					"User-Api-Key" : userApiKey
 				},
-				"mothod" : "GET"
+				"method" : "GET"
 			};
 
 		}
 
 		/**
 		 * Get information of the user which the API key belongs to.
-		 * @return {Object} Response of the session request.
+		 * @return {JSON} Response of the session request.
 		 */
 		async getSessionInformation() {
-			//FIXME João!
+			
+			const sessionInformation = await fetch(this.site + "/session/current", this.GETRequestParameters)
+				.catch(error => {
+					throw error;
+				});
 
-			//Hardcoded value for now.
-			this.username = "jordy";
+			const sessionInformationJSON = await sessionInformation.json()
+				.catch(error => {
+					throw error;
+				});
+
+			this.username = sessionInformationJSON.current_user.username;
+
+			return sessionInformationJSON;
 		}
 
 		/**
