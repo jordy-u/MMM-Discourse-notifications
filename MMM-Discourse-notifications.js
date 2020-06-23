@@ -7,6 +7,10 @@ Module.register("MMM-Discourse-notifications", {
 	start: function (){
 	},
 
+	getStyles: function() {
+		return ["style.css"];
+	},
+
 	getDom: function() {
 		let element = document.createElement("div");
 		element.innerHTML = "Hello, World! ";
