@@ -1,7 +1,7 @@
 const _ = require("underscore");
 
 const NotificationType = require("./NotificationType");
-const ModelView = require("./ModelView");
+const ModuleView = require("./ModuleView");
 
 module.exports =
 	class NotificationManager {
@@ -16,17 +16,18 @@ module.exports =
 
 		/**
 		 * @param {DiscourseRequestHandler} discourseRequestHandler Connection instance for the Discourse site.
-		 * @param {ModelView} viewer Notifications are passed to this viewer.
+		 * @param {ModuleView} viewer Notifications are passed to this viewer.
+		 * @param {PostContentManager} postContentManager The instance that update
 		 * @param {int[]|undefined} interestedNotificationTypes The user only wants to see notifications of these types.
 		 * @param {int[]|undefined} uninterestedNotificationTypes The user does not want to see notifications of these types.
 		 */
-		constructor(discourseRequestHandler, viewer, interestedNotificationTypes=undefined, uninterestedNotificationTypes=undefined) {
+		constructor(discourseRequestHandler, viewer, postContentManager, interestedNotificationTypes=undefined, uninterestedNotificationTypes=undefined) {
 			this.requestHandler = discourseRequestHandler;
 			this.viewer = viewer;
 			this.lastNotificationId = 0;
 			this.lastAmountOfUnreadNotifications = 0;
-			this.unreadNotifications = {};
-			this.unreadLikes = {};
+			this.unreadNotifications = [];
+			this.unreadLikes = [];
 			this.postsToBeDownloaded = {}; // A lists of threads and their posts that need to be loaded. Multiple posts of a single thread can be loaded at the same time.
 
 			//Filter which notification types the user wants to see.
@@ -94,13 +95,14 @@ module.exports =
 			let notifications;
 			try {
 				notifications = await this.requestHandler.getNotifications();
+				console.log("await getNotifications()....");
 			} catch (error) {
 				this.showRequestError(error);
 				return;
 			}
 
 			//Copy unread notifications.
-			for (const notification in notifications.notifications) {
+			for (const notification of notifications.notifications) {
 				if (notification.read === false) {
 					if (!this.notificationIsInteresting(notification)) {continue;}
 
@@ -122,6 +124,7 @@ module.exports =
 					console.log();
 				}
 			}
+
 
 			this.viewer.setListOfNotifications(this.unreadNotifications, this.unreadLikes)
 			setTimeout(() => this.checkForUnseenNotifications(), 60000);
