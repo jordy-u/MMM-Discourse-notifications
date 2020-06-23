@@ -18,14 +18,14 @@ class ModuleView {
 	 * @param {JSON[]} listOfNotifications
 	 * @param {JSON[]} listOfLikes
 	 */
-	setListOfNotifications(listOfNotifications, listOfLikes) {
+
+	/*setListOfNotifications(listOfNotifications, listOfLikes) {
 		console.log("listOfNotifications");
 		console.log(listOfNotifications);
 		console.log("listOfLikes");
 		console.log(listOfLikes);
 		console.log("setListOfNotifications --end--");
-	}
-
+	}*/
 	/**
 	 * @param {string} message
 	 */
@@ -48,3 +48,6 @@ class ModuleView {
 	}
 
 };
+
+
+

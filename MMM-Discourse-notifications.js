@@ -5,6 +5,8 @@ Module.register("MMM-Discourse-notifications", {
 	},
 
 	start: function (){
+		this.element = document.createElement("div");
+		this.element.innerHTML = "Hello, World! ";
 	},
 
 	getStyles: function() {
@@ -12,9 +14,8 @@ Module.register("MMM-Discourse-notifications", {
 	},
 
 	getDom: function() {
-		let element = document.createElement("div");
-		element.innerHTML = "Hello, World! ";
-		return element;
+		this.element.innerHTML = "Hello, getDom! ";
+		return this.element;
 	},
 
 	notificationReceived: function(notification, payload, sender) {
@@ -25,7 +26,7 @@ Module.register("MMM-Discourse-notifications", {
 			var timer = setInterval(()=>{
 				this.sendSocketNotification("DO_YOUR_JOB", this.count);
 				this.count++;
-			}, 5000);
+			}, 6000);
 			break;
 		}
 	},
@@ -36,7 +37,10 @@ Module.register("MMM-Discourse-notifications", {
 		switch(notification) {
 		case "I_DID":
 			//Do stuff
+
 			console.log("Recieved: I_DID");
+			this.element.innerHTML = payload;
+
 			break;
 		}
 	},
