@@ -26,12 +26,19 @@ class PostContentManager {
 	}
 	*/
 
+	requestHandler;
+	postContent;
+	downloadTimer;
+	queuedThreads;
+
+
 	/**
 	 * @param {DiscourseRequestHandler} discourseRequestHandler Connection instance for the Discourse site.
 	 */
 	constructor(discourseRequestHandler) {
 		this.requestHandler = discourseRequestHandler;
 		this.postContent = {};
+		//FIXME use order
 		this.order = [0,1,2,3,4];
 		this.downloadTimer = undefined;
 		this.queuedThreads = [];
@@ -137,6 +144,7 @@ class PostContentManager {
 	 * @return {Object|undefined} The requested content. If it is not downloaded yet, return undefined.
 	 */
 	getPostContent(threadId, postId) {
+		//FIXME Throws don't work in async threads.
 		if (this.postContent[threadId] === undefined) { throw "Thread undefined"; }
 		if (this.postContent[threadId].posts[postId] === undefined) { throw "Post undefined"; }
 		if (_.isEmpty(this.postContent[threadId].posts[postId])) { return undefined; }
