@@ -24,8 +24,6 @@ class ModuleView {
 		console.log("listOfLikes");
 		console.log(listOfLikes);
 		console.log("setListOfNotifications --end--");
-		this.logContent();
-		setTimeout(() => this.logContent(), 3000);
 	}
 
 	/**
@@ -46,7 +44,7 @@ class ModuleView {
 
 	logContent() {
 		console.log("logContent()");
-		console.log(this.postContentManager.getPostContent(6194, 3878));
+		console.log(this.postContentManager.getPostContent(1240, 3878));
 	}
 
 };

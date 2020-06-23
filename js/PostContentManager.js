@@ -38,8 +38,6 @@ class PostContentManager {
 	constructor(discourseRequestHandler) {
 		this.requestHandler = discourseRequestHandler;
 		this.postContent = {};
-		//FIXME use order
-		this.order = [0,1,2,3,4];
 		this.downloadTimer = undefined;
 		this.queuedThreads = [];
 	}
@@ -145,8 +143,8 @@ class PostContentManager {
 	 */
 	getPostContent(threadId, postId) {
 		//FIXME Throws don't work in async threads.
-		if (this.postContent[threadId] === undefined) { throw "Thread undefined"; }
-		if (this.postContent[threadId].posts[postId] === undefined) { throw "Post undefined"; }
+		if (this.postContent[threadId] === undefined) { return Error("Thread undefined"); }
+		if (this.postContent[threadId].posts[postId] === undefined) { return Error("Post undefined"); }
 		if (_.isEmpty(this.postContent[threadId].posts[postId])) { return undefined; }
 		return this.postContent[threadId].posts[postId];
 	}
