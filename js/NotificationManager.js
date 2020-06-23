@@ -7,6 +7,7 @@ module.exports =
 	class NotificationManager {
 		requestHandler;
 		viewer;
+		postContentManager;
 		lastNotificationId;
 		lastAmountOfUnreadNotifications;
 		unreadNotifications;
@@ -24,6 +25,7 @@ module.exports =
 		constructor(discourseRequestHandler, viewer, postContentManager, interestedNotificationTypes=undefined, uninterestedNotificationTypes=undefined) {
 			this.requestHandler = discourseRequestHandler;
 			this.viewer = viewer;
+			this.postContentManager = postContentManager;
 			this.lastNotificationId = 0;
 			this.lastAmountOfUnreadNotifications = 0;
 			this.unreadNotifications = [];
@@ -125,6 +127,8 @@ module.exports =
 				}
 			}
 
+			this.postContentManager.updatePostList(this.postsToBeDownloaded);
+			this.postContentManager.loadContent(Object.keys(this.postsToBeDownloaded));
 
 			this.viewer.setListOfNotifications(this.unreadNotifications, this.unreadLikes)
 			setTimeout(() => this.checkForUnseenNotifications(), 60000);
