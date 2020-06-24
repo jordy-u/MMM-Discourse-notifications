@@ -153,7 +153,7 @@ module.exports =
 		 */
 		showRequestError(error) {
 			//FIXME Try to catch specific errors, like: "413: Too many requests", "403: Forbidden source" or "5xx: Internal server error".
-			this.viewer.showError("Something went wrong:" + error.toString());
+			this.viewer.showError(error.message);
 		}
 
 	};

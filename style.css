@@ -67,3 +67,7 @@ body{
 #notificationHeader > #important {
     color: #ffffff;
 }
+
+#errorMessage {
+    color: #ff9999;
+}

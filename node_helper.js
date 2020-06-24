@@ -7,14 +7,17 @@ const NotificationManager = require("./js/NotificationManager");
 const ModuleView = require("./js/ModuleView");
 //------
 //FIXME make the userApiKey a config.json option
-const userApiKey = "";
+const userApiKey = "8be955bf6d546c5757bf814e59ca5c51";
 let apiKeyChecker = new ApiKeyChecker();
 const apiKeyCheck = apiKeyChecker.checkDiscourseApiKey(userApiKey);
 if (!apiKeyCheck.success) {
 	//ModuleView.showError(apiKeyCheck.errorMsg);
 }
 
-const robotExchangeConnection = new DiscourseRequestHandler("www.robotexchange.io", userApiKey);
+const site = "meta.discourse.org";
+//const site = "www.robotexchange.io";
+
+const robotExchangeConnection = new DiscourseRequestHandler(site, userApiKey);
 
 const postContentManager = new PostContentManager(robotExchangeConnection);
 
@@ -25,7 +28,7 @@ module.exports = NodeHelper.create({
 	start: function() {
 		console.log("start");
 
-		moduleView = new ModuleView(this, postContentManager);
+		moduleView = new ModuleView(this, postContentManager, site);
 		nm = new NotificationManager(robotExchangeConnection, moduleView, postContentManager);
 
 		this.sendSocketNotification("ADD_FEED", {"test":"test"});

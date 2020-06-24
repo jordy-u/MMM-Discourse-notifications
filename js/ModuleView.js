@@ -9,6 +9,7 @@ class ModuleView {
 	node_helper;
 	postContentManager;
 	nextNotificationTimer;
+	site;
 
 	//List of all notifications and likes to be shown.
 	listOfNotifications;
@@ -28,10 +29,12 @@ class ModuleView {
 	/**
 	 * @param {Node_Helper} node_helper
 	 * @param {PostContentManager} postContentManager
+	 * @param {String} site
 	 */
-	constructor(node_helper, postContentManager) {
+	constructor(node_helper, postContentManager, site) {
 		this.node_helper = node_helper;
 		this.postContentManager = postContentManager;
+		this.site = site;
 
 		// Create my module container
 		this.moduleContainer = document.createElement("div");
@@ -54,8 +57,6 @@ class ModuleView {
 		// Create User avatar
 		this.userAvatar = document.createElement("img");
 		this.userAvatar.setAttribute("id", "userAvatar");
-		// Update user avatar value
-		this.userAvatar.src = "https://www.kindpng.com/picc/m/78-786207_user-avatar-png-user-avatar-icon-png-transparent.png";
 
 		// Create Notification Header
 		this.notificationHeader = document.createElement("div");
@@ -99,7 +100,7 @@ class ModuleView {
 			if (typeof notificationContent !== "object") {
 				return;
 			}
-			avatarUrl = "https://www.robotexchange.io" + notificationContent.avatar_template.replace("{size}", "45");
+			avatarUrl = `https://${this.site}${notificationContent.avatar_template.replace("{size}", "45")}`;
 		}
 
 		//Remove notification from queue.
@@ -119,7 +120,7 @@ class ModuleView {
 			messageText = notificationContent.cooked.replace(/<\/?[^>]+(>|$)/g, "");
 			break;
 		case NotificationType.granted_badge:
-			avatarUrl = "https://www.robotexchange.io/user_avatar/www.robotexchange.io/discobot/45/1_2.png";
+			avatarUrl = `https://${this.site}/user_avatar/${this.site}/discobot/45/1_2.png`;
 			notificationHeaderText = `You earned a badge!: <a id='important'>${nextNotification.data.badge_name}</a>`;
 			messageText = "";
 			break;
@@ -161,6 +162,11 @@ class ModuleView {
 	showError(message) {
 		console.error("Error!");
 		console.error(message);
+		this.userAvatar.src = ``;
+		this.notificationHeader.innerHTML = `<a id='errorMessage'>An error occurred!</a>`;
+		this.message.innerHTML = message;
+
+		this.node_helper.displayNewNotification(this);
 	}
 
 	/**
@@ -169,7 +175,7 @@ class ModuleView {
 	showLoggedInUser(userSession) {
 		clearInterval(this.nextNotificationTimer);
 
-		this.userAvatar.src = `https://www.robotexchange.io${userSession.current_user.avatar_template.replace("{size}", "45")}`;
+		this.userAvatar.src = `https://${this.site}${userSession.current_user.avatar_template.replace("{size}", "45")}`;
 		this.notificationHeader.innerHTML = `Logged in as <a id='username'>${userSession.current_user.name}</a>`;
 		this.message.innerHTML = `Unread notifications: ${userSession.current_user.unread_notifications}, unread high priority notifications: ${userSession.current_user.unread_high_priority_notifications}<br>unread messages: ${userSession.current_user.unread_private_messages}.`;
 

@@ -22,11 +22,21 @@ module.exports =
 		 * @return {JSON} Response of the session request.
 		 */
 		async getSessionInformation() {
-			
+
 			const sessionInformation = await fetch(this.site + "/session/current", this.GETRequestParameters)
 				.catch(error => {
 					throw error;
 				});
+
+			if (sessionInformation.status < 200 || sessionInformation.status >= 300 ) {
+				switch(sessionInformation.status) {
+				case 403:
+					throw Error("Forbidden. Is the API key (still) valid?");
+				case 404:
+					throw Error("The content does not exist (anymore)");
+				}
+				throw Error(`Unknown error: ${sessionInformation.status}`);
+			}
 
 			const sessionInformationJSON = await sessionInformation.json()
 				.catch(error => {
