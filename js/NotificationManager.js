@@ -14,6 +14,7 @@ module.exports =
 		unreadLikes;
 		postsToBeDownloaded;
 		interestingNotificationTypes;
+		justCreated = true;
 
 		/**
 		 * @param {DiscourseRequestHandler} discourseRequestHandler Connection instance for the Discourse site.
@@ -31,6 +32,7 @@ module.exports =
 			this.unreadNotifications = [];
 			this.unreadLikes = [];
 			this.postsToBeDownloaded = {}; // A lists of threads and their posts that need to be loaded. Multiple posts of a single thread can be loaded at the same time.
+
 
 			//Filter which notification types the user wants to see.
 			if (interestedNotificationTypes === undefined) {
@@ -63,6 +65,12 @@ module.exports =
 				this.showRequestError(error);
 			}
 
+			if (this.justCreated) {
+				//Show current amount of notification while waiting for the first notification to show up.
+				this.viewer.showLoggedInUser(sessionInformation);
+				this.justCreated = false;
+			}
+
 			//Check if there are any unread notifications at all.
 			if (
 				sessionInformation.current_user.unread_notifications === 0 &&
@@ -71,7 +79,7 @@ module.exports =
 				//No notifications. Check again later.
 				this.lastNotificationId = sessionInformation.seen_notification_id;
 				this.viewer.showLoggedInUser(sessionInformation);
-				setTimeout(() => this.checkForUnseenNotifications(), 60000);
+				setTimeout(() => this.checkForUnseenNotifications(), 10000);
 				return;
 			}
 
@@ -85,7 +93,7 @@ module.exports =
 				this.lastAmountOfUnreadNotifications = sessionInformation.unread_notifications;
 			} else {
 				//Don't update the Viewer.
-				setTimeout(() => this.checkForUnseenNotifications(), 60000);
+				setTimeout(() => this.checkForUnseenNotifications(), 10000);
 			}
 		}
 
@@ -122,8 +130,6 @@ module.exports =
 						if (this.postsToBeDownloaded[notification.topic_id] === undefined) {this.postsToBeDownloaded[notification.topic_id] = [];}
 						this.postsToBeDownloaded[notification.topic_id].push(notification.data.original_post_id);
 					}
-					//FIXME Remove the console.log()
-					console.log();
 				}
 			}
 
@@ -131,7 +137,7 @@ module.exports =
 			this.postContentManager.loadContent(Object.keys(this.postsToBeDownloaded));
 
 			this.viewer.setListOfNotifications(this.unreadNotifications, this.unreadLikes)
-			setTimeout(() => this.checkForUnseenNotifications(), 60000);
+			setTimeout(() => this.checkForUnseenNotifications(), 10000);
 
 		}
 

@@ -1,74 +1,47 @@
-const fs = require('fs')
+const _ = require('underscore')
 var document = require('html-element').document;
-let listOfNotifications = {
-	privateMessages : [
-		{
-			id : 3662,
-			from : "Jordy",
-			avatarURL : "https://www.robotexchange.io/user_avatar/www.robotexchange.io/jordy/120/1385_2.png",
-			title : "This is a title1",
-			message : "Hallo, @João!",
-			timestamp : "2020-06-17T20:12"
-		},
-		{
-			id : 3662,
-			from : "Jordy",
-			avatarURL : "https://www.robotexchange.io/user_avatar/www.robotexchange.io/jordy/120/1385_2.png",
-			title : "This is a title2",
-			message : "Hallo, @João!",
-			timestamp : "2020-06-17T20:12"
-		}
-	]
-	/*mentions : {},
-	likes : {},
-	replies : {},
-	groupMentionInPrivateThread : {},
-	otherNotifications : {}*/
-};
+const Node_Helper = require("./../node_helper");
+const NotificationType = require("./NotificationType");
 
 module.exports =
 class ModuleView {
 
+	node_helper;
 	postContentManager;
-	moduleHTML;
+	nextNotificationTimer;
+
+	//List of all notifications and likes to be shown.
+	listOfNotifications;
+	listOfLikes;
+
+	//List of notifications and likes that have not been shown already.
+	queuedNotifications;
+	queuedLikes;
+
+	//HTML element
+	moduleContainer;
+	notificationHeader;
+	message;
+	userAvatar;
 
 
 	/**
+	 * @param {Node_Helper} node_helper
 	 * @param {PostContentManager} postContentManager
 	 */
-	constructor(postContentManager) {
+	constructor(node_helper, postContentManager) {
+		this.node_helper = node_helper;
 		this.postContentManager = postContentManager;
-		console.log("Moduleview created.");
-		this.listOfNotifications = listOfNotifications;
-		//HTML script
-		console.log(this.listOfNotifications);
-	}
-
-	showExample() {
-
-		const notificationContent = this.postContentManager.getPostContent(1240, 3878)
-		console.warn(notificationContent);
-
-		/*let htmlstring =
-			"<img id=\"thuasLogo\"></img>" +
-			"<div id=\"messageContainer\">" +
-			" <div id=\"titleContainer\">" +
-			"   <img id=\"userAvatar\"></img>" +
-			"   <span id=\"userId\"></span>" +
-			" </div>" +
-			" <div id=\"message\"></div>" +
-			"</div>";*/
-
 
 		// Create my module container
-		let moduleContainer = document.createElement("div");
-		moduleContainer.setAttribute("id", "myModuleContainer");
+		this.moduleContainer = document.createElement("div");
+		this.moduleContainer.setAttribute("id", "myModuleContainer");
 
 		// Create thuas logo
 		let logo = document.createElement("img");
 		logo.setAttribute("id", "logo");
 		// Update logo value
-		logo.src = "https://media-exp1.licdn.com/dms/image/C4D0BAQFtr7VqGaVWcQ/company-logo_200_200/0?e=2159024400&v=beta&t=sUoUFDyU6baKqslxF0C2oT5OI8aAbqDnOmpTVbaVoPo";
+		logo.src = "https://i.imgur.com/ux2ukmy.png";
 
 		// Create message container
 		let messageContainer = document.createElement("div");
@@ -79,73 +52,109 @@ class ModuleView {
 		titleContainer.setAttribute("id", "titleContainer");
 
 		// Create User avatar
-		let userAvatar = document.createElement("img");
-		userAvatar.setAttribute("id", "userAvatar");
+		this.userAvatar = document.createElement("img");
+		this.userAvatar.setAttribute("id", "userAvatar");
 		// Update user avatar value
-		userAvatar.src = "https://www.kindpng.com/picc/m/78-786207_user-avatar-png-user-avatar-icon-png-transparent.png";
+		this.userAvatar.src = "https://www.kindpng.com/picc/m/78-786207_user-avatar-png-user-avatar-icon-png-transparent.png";
 
 		// Create Notification Header
-		let notificationHeader = document.createElement("div");
-		notificationHeader.setAttribute("id", "notificationHeader")
+		this.notificationHeader = document.createElement("div");
+		this.notificationHeader.setAttribute("id", "notificationHeader")
 		// Update value for user id
-		notificationHeader.innerHTML = "notificationHeader notificationHeader notificationHeader notificationHeader notificationHeader";
+		this.notificationHeader.innerHTML = "...";
 
 		// Create message
-		let message = document.createElement("div");
-		message.setAttribute("id", "message");
-		// Update message value
-		message.innerHTML = "message its a message, how long should it be???? Maybe longer... but how longer  Maybe longer... but how longer  Maybe longer... but how longer  Maybe longer... but how longer";
-
+		this.message = document.createElement("div");
+		this.message.setAttribute("id", "message");
+		this.message.innerHTML = "...";
 
 		// Set the children for elements
-
-		moduleContainer.appendChild(logo);
-		moduleContainer.appendChild(messageContainer);
-
-
+		this.moduleContainer.appendChild(logo);
+		this.moduleContainer.appendChild(messageContainer);
 		messageContainer.appendChild(titleContainer);
-		messageContainer.appendChild(message);
+		messageContainer.appendChild(this.message);
+		titleContainer.appendChild(this.userAvatar);
+		titleContainer.appendChild(this.notificationHeader);
+	}
 
-		titleContainer.appendChild(userAvatar);
-		titleContainer.appendChild(notificationHeader);
-
-
-
-		//messageContainer.append(titleContainer, userAvatar, userId);
-		//moduleElement.append(logo, messageContainer, message);
-
-		/*let p = document.createElement("p");
-		p.innerHTML = "this is a test";
-		element.appendChild(p);
-		console.log(element.outerHTML); //output = <div><p>this is a test</p></div>
-		console.log(p.outerHTML); //output = <p>this is a test</p>*/
-		//this.moduleHTML = this.element;
-
-		/* = "Bonjour thats my id";
-		document.getProperty("thuasLogo").src = "https://media-exp1.licdn.com/dms/image/C4D0BAQFtr7VqGaVWcQ/company-logo_200_200/0?e=2159024400&v=beta&t=sUoUFDyU6baKqslxF0C2oT5OI8aAbqDnOmpTVbaVoPo" ;
-		getProperty("userAvatar").src = "https://www.kindpng.com/picc/m/78-786207_user-avatar-png-user-avatar-icon-png-transparent.png" ;
-		getProperty("message").innerHTML ="This is the message we want to display. This is the message we want to display. This is the message we want to display." ;
-		*/
-		console.log("SHOW EXAMPLE FUNCTION");
-
-		return moduleContainer.outerHTML;
+	getNotificationHTML() {
+		return this.moduleContainer.outerHTML;
 	};
 
 	showNextNotification() {
+
+		if (_.isEmpty(this.queuedNotifications)) {
+			//Copy all notifications to the queue.
+			this.queuedNotifications = [...this.listOfNotifications];
+		}
+
+		let avatarUrl = "";
+		let notificationHeaderText = "header";
+		let messageText = "text";
+
+		const nextNotification = this.queuedNotifications[0];
+		let notificationContent;
+		if (nextNotification.topic_id !== null) {
+			notificationContent = this.postContentManager.getPostContent(nextNotification.topic_id, nextNotification.data.original_post_id);
+			if (typeof notificationContent !== "object") {
+				return;
+			}
+			avatarUrl = "https://www.robotexchange.io" + notificationContent.avatar_template.replace("{size}", "45");
+		}
+
+		//Remove notification from queue.
+		this.queuedNotifications.shift();
+
+		switch(nextNotification.notification_type) {
+		case NotificationType.mentioned:
+			notificationHeaderText = `<a id='username'>${nextNotification.data.original_username}</a> mentioned you in: <a id='important'>${nextNotification.data.topic_title}</a>`;
+			messageText = notificationContent.cooked.replace(/<\/?[^>]+(>|$)/g, "");
+			break;
+		case NotificationType.private_message:
+			notificationHeaderText = `<a id='username'>${nextNotification.data.original_username}</a> sent you a message in: <a id='important'>${nextNotification.data.topic_title}</a>`;
+			messageText = notificationContent.cooked.replace(/<\/?[^>]+(>|$)/g, "");
+			break;
+		case NotificationType.posted:
+			notificationHeaderText = `<a id='username'>${nextNotification.data.original_username}</a> posted a message in: <a id='important'>${nextNotification.data.topic_title}</a>`;
+			messageText = notificationContent.cooked.replace(/<\/?[^>]+(>|$)/g, "");
+			break;
+		case NotificationType.granted_badge:
+			avatarUrl = "https://www.robotexchange.io/user_avatar/www.robotexchange.io/discobot/45/1_2.png";
+			notificationHeaderText = `You earned a badge!: <a id='important'>${nextNotification.data.badge_name}</a>`;
+			messageText = "";
+			break;
+
+		case NotificationType.group_mentioned:
+			notificationHeaderText = `<a id='username'>${nextNotification.data.original_username}</a> mentioned <a id='username'>${nextNotification.data.group_name}</a> in: <a id='important'>${nextNotification.data.topic_title}</a>`;
+			messageText = notificationContent.cooked.replace(/<\/?[^>]+(>|$)/g, "");
+			break;
+		default:
+			notificationHeaderText = `You've got a new notification.`
+			const notificationType = (_.invert(NotificationType))[nextNotification.notification_type];
+			messageText = `Notification type: ${notificationType}`;
+			break;
+		}
+
+		this.userAvatar.src = avatarUrl;
+		this.notificationHeader.innerHTML = notificationHeaderText;
+		this.message.innerHTML = messageText;
+
+		this.node_helper.displayNewNotification(this);
 	}
 
 	/**
 	 * @param {JSON[]} listOfNotifications
 	 * @param {JSON[]} listOfLikes
 	 */
+	setListOfNotifications(listOfNotifications, listOfLikes) {
+		this.listOfNotifications = listOfNotifications;
+		this.listOfLikes = listOfLikes;
 
-	/*setListOfNotifications(listOfNotifications, listOfLikes) {
-		console.log("listOfNotifications");
-		console.log(listOfNotifications);
-		console.log("listOfLikes");
-		console.log(listOfLikes);
-		console.log("setListOfNotifications --end--");
-	}*/
+		//Stop the last timer, to be sure there is only one active timer.
+		clearInterval(this.nextNotificationTimer);
+		this.nextNotificationTimer = setInterval(() => { this.showNextNotification(); }, 3000);
+	}
+
 	/**
 	 * @param {string} message
 	 */
@@ -158,16 +167,14 @@ class ModuleView {
 	 * @param {JSON} userSession
 	 */
 	showLoggedInUser(userSession) {
-		console.log("userSession");
-		console.log(userSession);
-	}
+		clearInterval(this.nextNotificationTimer);
 
-	//test function
-	logContent() {
-		console.log("logContent()");
-		console.log(this.postContentManager.getPostContent(1240, 3878));
-	}
+		this.userAvatar.src = `https://www.robotexchange.io${userSession.current_user.avatar_template.replace("{size}", "45")}`;
+		this.notificationHeader.innerHTML = `Logged in as <a id='username'>${userSession.current_user.name}</a>`;
+		this.message.innerHTML = `Unread notifications: ${userSession.current_user.unread_notifications}, unread high priority notifications: ${userSession.current_user.unread_high_priority_notifications}<br>unread messages: ${userSession.current_user.unread_private_messages}.`;
 
+		this.node_helper.displayNewNotification(this);
+	}
 };
 
 

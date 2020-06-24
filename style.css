@@ -40,7 +40,7 @@ body{
     text-overflow: ellipsis;
     overflow: hidden;
     word-break: break-all;
-    font-size: 28px;
+    font-size: 24px;
     line-height: 30px;
     font-weight: bold;
     color: white;
@@ -51,7 +51,19 @@ body{
     text-overflow: ellipsis;
     overflow: hidden;
     word-break: break-all;
-    font-size: 24px;
+    font-size: 20px;
     line-height: 24px;
     padding-top: 11px;
+}
+
+#notificationHeader {
+    color: #b6b6b6;
+}
+
+#notificationHeader > #username {
+    color: #d5feff;
+}
+
+#notificationHeader > #important {
+    color: #ffffff;
 }

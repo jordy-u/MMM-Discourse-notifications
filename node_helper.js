@@ -6,8 +6,8 @@ const DiscourseRequestHandler = require("./js/DiscourseRequestHandler");
 const NotificationManager = require("./js/NotificationManager");
 const ModuleView = require("./js/ModuleView");
 //------
-
-const userApiKey = "8be955bf6d546c5757bf814e59ca5c51";
+//FIXME make the userApiKey a config.json option
+const userApiKey = "";
 let apiKeyChecker = new ApiKeyChecker();
 const apiKeyCheck = apiKeyChecker.checkDiscourseApiKey(userApiKey);
 if (!apiKeyCheck.success) {
@@ -18,15 +18,15 @@ const robotExchangeConnection = new DiscourseRequestHandler("www.robotexchange.i
 
 const postContentManager = new PostContentManager(robotExchangeConnection);
 
-const moduleView = new ModuleView(postContentManager);
-
-//Check if there are unread notifications.
-const nm = new NotificationManager(robotExchangeConnection, moduleView, postContentManager);
-nm.start();
+let moduleView;
+let nm;
 
 module.exports = NodeHelper.create({
 	start: function() {
 		console.log("start");
+
+		moduleView = new ModuleView(this, postContentManager);
+		nm = new NotificationManager(robotExchangeConnection, moduleView, postContentManager);
 
 		this.sendSocketNotification("ADD_FEED", {"test":"test"});
 	},
@@ -36,11 +36,17 @@ module.exports = NodeHelper.create({
 		switch(notification) {
 		case "DO_YOUR_JOB":
 			console.log("Recieved: DO_YOUR_JOB");
-			this.sendSocketNotification("I_DID", moduleView.showExample());
+			nm.start();
+			this.sendSocketNotification("I_DID", "");
 			//this.sendSocketNotification("I_DID", moduleView.testFuntionForCall());
 			break;
 		}
 	},
+
+	displayNewNotification: function (moduleView) {
+		this.sendSocketNotification("NEXT_NOTIFICATION", moduleView.getNotificationHTML());
+
+	}
 	/*sendSocketNotification(){
 		if (this.sendSocketNotification("I_DID")) {
 			console.log("send notification I DID case");
