@@ -5,23 +5,25 @@ Module.register("MMM-Discourse-notifications", {
 	},
 
 	start: function (){
+		this.element = document.createElement("div");
+		this.element.innerHTML = "Hello, World! ";
+	},
+
+	getStyles: function() {
+		return ["style.css"];
 	},
 
 	getDom: function() {
-		let element = document.createElement("div");
-		element.innerHTML = "Hello, World! ";
-		return element;
+		this.element.innerHTML = "Loading...";
+		return this.element;
 	},
 
 	notificationReceived: function(notification, payload, sender) {
 		console.log("notification: " + notification);
 		switch(notification) {
 		case "DOM_OBJECTS_CREATED":
-			//Do stuff
-			var timer = setInterval(()=>{
-				this.sendSocketNotification("DO_YOUR_JOB", this.count);
-				this.count++;
-			}, 5000);
+			//Enable socket communication
+			this.sendSocketNotification("DO_YOUR_JOB", this.count);
 			break;
 		}
 	},
@@ -31,8 +33,14 @@ Module.register("MMM-Discourse-notifications", {
 
 		switch(notification) {
 		case "I_DID":
-			//Do stuff
+			//Socket communication enabled
 			console.log("Recieved: I_DID");
+			break;
+
+		case "NEXT_NOTIFICATION":
+			console.log("Recieved: NEXT_NOTIFICATION");
+			this.element.innerHTML = payload;
+
 			break;
 		}
 	},

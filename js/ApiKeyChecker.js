@@ -16,7 +16,7 @@ module.exports =
 	/**
 	 * Check if the apiKey has the right format before using it.
 	 * @param {string} apiKey
-	 * @return {Object} success, error, errorMsg, formattedKey
+	 * @return {JSON} success, error, errorMsg, formattedKey
 	 */
 	checkDiscourseApiKey(apiKey) {
 
