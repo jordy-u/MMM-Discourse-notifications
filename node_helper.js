@@ -7,7 +7,7 @@ const NotificationManager = require("./js/NotificationManager");
 const ModuleView = require("./js/ModuleView");
 //------
 //FIXME make the userApiKey a config.json option
-const userApiKey = "8be955bf6d546c5757bf814e59ca5c51";
+const userApiKey = "";
 let apiKeyChecker = new ApiKeyChecker();
 const apiKeyCheck = apiKeyChecker.checkDiscourseApiKey(userApiKey);
 if (!apiKeyCheck.success) {
