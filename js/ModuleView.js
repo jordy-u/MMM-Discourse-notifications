@@ -169,7 +169,7 @@ class ModuleView {
 
 		//Stop the last timer, to be sure there is only one active timer.
 		clearInterval(this.nextNotificationTimer);
-		this.nextNotificationTimer = setInterval(() => { this.showNextNotification(); }, this.showDurationSeconds);
+		this.nextNotificationTimer = setInterval(() => { this.showNextNotification(); }, this.showDurationSeconds * 1000);
 	}
 
 	/**

@@ -81,7 +81,7 @@ module.exports =
 				//No notifications. Check again later.
 				this.lastNotificationId = sessionInformation.seen_notification_id;
 				this.viewer.showLoggedInUser(sessionInformation);
-				setTimeout(() => this.checkForUnseenNotifications(), this.updateNotificationsAfterSeconds);
+				setTimeout(() => this.checkForUnseenNotifications(), this.updateNotificationsAfterSeconds * 1000);
 				return;
 			}
 
@@ -95,7 +95,7 @@ module.exports =
 				this.lastAmountOfUnreadNotifications = sessionInformation.unread_notifications;
 			} else {
 				//Don't update the Viewer.
-				setTimeout(() => this.checkForUnseenNotifications(), this.updateNotificationsAfterSeconds);
+				setTimeout(() => this.checkForUnseenNotifications(), this.updateNotificationsAfterSeconds * 1000);
 			}
 		}
 
@@ -139,7 +139,7 @@ module.exports =
 			this.postContentManager.loadContent(Object.keys(this.postsToBeDownloaded));
 
 			this.viewer.setListOfNotifications(this.unreadNotifications, this.unreadLikes)
-			setTimeout(() => this.checkForUnseenNotifications(), this.updateNotificationsAfterSeconds);
+			setTimeout(() => this.checkForUnseenNotifications(), this.updateNotificationsAfterSeconds * 1000);
 
 		}
 
@@ -154,7 +154,6 @@ module.exports =
 		 * @param {Error} error
 		 */
 		showRequestError(error) {
-			//FIXME Try to catch specific errors, like: "413: Too many requests", "403: Forbidden source" or "5xx: Internal server error".
 			this.viewer.showError(error.message);
 		}
 

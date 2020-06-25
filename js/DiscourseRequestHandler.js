@@ -39,6 +39,8 @@ module.exports =
 					throw Error("Forbidden. Is the API key (still) valid?");
 				case 404:
 					throw Error("The content does not exist (anymore)");
+				case 429:
+					throw Error("Too many requests! Wait or create a new key. The default max requests/minute is 20.");
 				}
 				throw Error(`Unknown error: ${sessionInformation.status}`);
 			}
