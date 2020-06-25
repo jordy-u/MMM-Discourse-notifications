@@ -11,6 +11,7 @@ class ModuleView {
 	postContentManager;
 	nextNotificationTimer;
 	site;
+	id;
 
 	//List of all notifications and likes to be shown.
 	listOfNotifications;
@@ -32,11 +33,13 @@ class ModuleView {
 	 * @param {PostContentManager} postContentManager
 	 * @param {String} site
 	 * @param {boolean} showIcon When true, the favicon of the website is shown next to the notifications.
+	 * @param {String} id Random generated ID. Now multiple instances of the module can be used.
 	 */
-	constructor(node_helper, postContentManager, site, showIcon) {
+	constructor(node_helper, postContentManager, site, showIcon, id) {
 		this.node_helper = node_helper;
 		this.postContentManager = postContentManager;
 		this.site = site;
+		this.id = id;
 
 		// Create my module container
 		this.moduleContainer = document.createElement("div");
@@ -85,7 +88,10 @@ class ModuleView {
 	/** Return the HTML-string of the current notification
 	 */
 	getNotificationHTML() {
-		return this.moduleContainer.outerHTML;
+		return {
+			id : this.id,
+			HTML: this.moduleContainer.outerHTML
+		};
 	};
 
 	/** Prepair the next notification and show it on the viewer.
@@ -173,6 +179,7 @@ class ModuleView {
 		this.userAvatar.src = ``;
 		this.notificationHeader.innerHTML = `<a id='errorMessage'>An error occurred!</a>`;
 		this.message.innerHTML = message;
+		this.moduleContainer.setAttribute("style","max-width: 55vw")
 
 		this.node_helper.displayNewNotification(this);
 	}

@@ -1,12 +1,13 @@
 /* global Module */
 Module.register("MMM-Discourse-notifications", {
 	defaults: {
-		UserApiKey: "Not defined"
+		showIcon: true
 	},
 
 	start: function (){
 		this.element = document.createElement("div");
-		this.element.innerHTML = "Hello, World! ";
+		//A unique ID is needed, so multiple instances of this module can be used.
+		this.id = Math.random().toString(36).substr(2, 9);
 	},
 
 	getStyles: function() {
@@ -27,7 +28,13 @@ Module.register("MMM-Discourse-notifications", {
 		switch(notification) {
 		case "DOM_OBJECTS_CREATED":
 			//Enable socket communication
-			this.sendSocketNotification("DO_YOUR_JOB", this.count);
+			{
+				const newPayload = {
+					id : this.id,
+					config : this.config
+				};
+				this.sendSocketNotification("ENABLE_SOCKET_COMMUNICATION", newPayload);
+			}
 			break;
 		}
 	},
@@ -39,15 +46,11 @@ Module.register("MMM-Discourse-notifications", {
 		console.log("socketNotificationReceived: " + notification);
 
 		switch(notification) {
-		case "I_DID":
-			//Socket communication enabled
-			console.log("received: I_DID");
-			break;
-
 		case "NEXT_NOTIFICATION":
 			console.log("received: NEXT_NOTIFICATION");
-			this.element.innerHTML = payload;
-
+			if (payload.id === this.id) {
+				this.element.innerHTML = payload.HTML;
+			}
 			break;
 		}
 	},
