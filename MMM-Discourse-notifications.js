@@ -18,6 +18,10 @@ Module.register("MMM-Discourse-notifications", {
 		return this.element;
 	},
 
+	/** Handle received MagicMirror-notifications.
+	 * @param {String} notification socket-notification name.
+	 * @param {Object} payload Date Any data to be sent alongside the socket-notification. It can by any data type.
+	 */
 	notificationReceived: function(notification, payload, sender) {
 		console.log("notification: " + notification);
 		switch(notification) {
@@ -27,18 +31,21 @@ Module.register("MMM-Discourse-notifications", {
 			break;
 		}
 	},
-
+	/** Handle received socket-notifications.
+	 * @param {String} notification socket-notification name.
+	 * @param {Object} payload Date Any data to be sent alongside the socket-notification. It can by any data type.
+	 */
 	socketNotificationReceived: function(notification, payload) {
 		console.log("socketNotificationReceived: " + notification);
 
 		switch(notification) {
 		case "I_DID":
 			//Socket communication enabled
-			console.log("Recieved: I_DID");
+			console.log("received: I_DID");
 			break;
 
 		case "NEXT_NOTIFICATION":
-			console.log("Recieved: NEXT_NOTIFICATION");
+			console.log("received: NEXT_NOTIFICATION");
 			this.element.innerHTML = payload;
 
 			break;
