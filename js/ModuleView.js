@@ -2,6 +2,7 @@ const _ = require('underscore')
 var document = require('html-element').document;
 const Node_Helper = require("./../node_helper");
 const NotificationType = require("./NotificationType");
+const GetFavicons = require('get-website-favicon')
 
 module.exports =
 class ModuleView {
@@ -10,6 +11,7 @@ class ModuleView {
 	postContentManager;
 	nextNotificationTimer;
 	site;
+	id;
 
 	//List of all notifications and likes to be shown.
 	listOfNotifications;
@@ -30,21 +32,30 @@ class ModuleView {
 	 * @param {Node_Helper} node_helper
 	 * @param {PostContentManager} postContentManager
 	 * @param {String} site
+	 * @param {boolean} showIcon When true, the favicon of the website is shown next to the notifications.
+	 * @param {String} id Random generated ID. Now multiple instances of the module can be used.
+	 * @param {int} showDurationSeconds How long a notification should stay on the screen before being refreshed.
 	 */
-	constructor(node_helper, postContentManager, site) {
+	constructor(node_helper, postContentManager, site, showIcon, id, showDurationSeconds) {
 		this.node_helper = node_helper;
 		this.postContentManager = postContentManager;
 		this.site = site;
+		this.id = id;
+		this.showDurationSeconds = showDurationSeconds;
 
 		// Create my module container
 		this.moduleContainer = document.createElement("div");
 		this.moduleContainer.setAttribute("id", "myModuleContainer");
 
-		// Create thuas logo
-		let logo = document.createElement("img");
-		logo.setAttribute("id", "logo");
-		// Update logo value
-		logo.src = "https://i.imgur.com/ux2ukmy.png";
+		let logo;
+		if (showIcon) {
+			logo = document.createElement("img");
+			logo.setAttribute("id", "logo");
+			GetFavicons(site).then(data=>{
+				logo.src = data.icons[1].src;
+				this.node_helper.displayNewNotification(this);
+			});
+		}
 
 		// Create message container
 		let messageContainer = document.createElement("div");
@@ -70,18 +81,24 @@ class ModuleView {
 		this.message.innerHTML = "...";
 
 		// Set the children for elements
-		this.moduleContainer.appendChild(logo);
+		if (showIcon) this.moduleContainer.appendChild(logo);
 		this.moduleContainer.appendChild(messageContainer);
 		messageContainer.appendChild(titleContainer);
 		messageContainer.appendChild(this.message);
 		titleContainer.appendChild(this.userAvatar);
 		titleContainer.appendChild(this.notificationHeader);
 	}
-
+	/** Return the HTML-string of the current notification
+	 */
 	getNotificationHTML() {
-		return this.moduleContainer.outerHTML;
+		return {
+			id : this.id,
+			HTML: this.moduleContainer.outerHTML
+		};
 	};
 
+	/** Prepair the next notification and show it on the viewer.
+	 */
 	showNextNotification() {
 
 		if (_.isEmpty(this.queuedNotifications)) {
@@ -100,7 +117,7 @@ class ModuleView {
 			if (typeof notificationContent !== "object") {
 				return;
 			}
-			avatarUrl = `https://${this.site}${notificationContent.avatar_template.replace("{size}", "45")}`;
+			avatarUrl = this.prepareAvatarUrl(notificationContent.avatar_template);
 		}
 
 		//Remove notification from queue.
@@ -153,7 +170,7 @@ class ModuleView {
 
 		//Stop the last timer, to be sure there is only one active timer.
 		clearInterval(this.nextNotificationTimer);
-		this.nextNotificationTimer = setInterval(() => { this.showNextNotification(); }, 3000);
+		this.nextNotificationTimer = setInterval(() => { this.showNextNotification(); }, this.showDurationSeconds * 1000);
 	}
 
 	/**
@@ -165,6 +182,7 @@ class ModuleView {
 		this.userAvatar.src = ``;
 		this.notificationHeader.innerHTML = `<a id='errorMessage'>An error occurred!</a>`;
 		this.message.innerHTML = message;
+		this.moduleContainer.setAttribute("style","max-width: 55vw")
 
 		this.node_helper.displayNewNotification(this);
 	}
@@ -175,11 +193,36 @@ class ModuleView {
 	showLoggedInUser(userSession) {
 		clearInterval(this.nextNotificationTimer);
 
-		this.userAvatar.src = `https://${this.site}${userSession.current_user.avatar_template.replace("{size}", "45")}`;
-		this.notificationHeader.innerHTML = `Logged in as <a id='username'>${userSession.current_user.name}</a>`;
+		this.userAvatar.src = this.prepareAvatarUrl(userSession.current_user.avatar_template);
+
+
+		this.notificationHeader.innerHTML = `Logged in as <a id='username'>${this.prepareUsername(userSession.current_user)}</a>`;
+
 		this.message.innerHTML = `Unread notifications: ${userSession.current_user.unread_notifications}, unread high priority notifications: ${userSession.current_user.unread_high_priority_notifications}<br>unread messages: ${userSession.current_user.unread_private_messages}.`;
 
 		this.node_helper.displayNewNotification(this);
+	}
+
+	/** Generate a valid URL for the avatar.
+	 * @param {string} avatarUrl
+	 */
+	prepareAvatarUrl(avatarUrl) {
+		//Sometimes, the full url (including the domain name) is provided.
+		if (!(avatarUrl.startsWith("https://") || avatarUrl.startsWith("https://"))) {
+			avatarUrl = `https://${this.site}${avatarUrl}`;
+		}
+		return avatarUrl.replace("{size}", "45");
+	}
+
+	/** Return the display name if it is defined. Otherwise, display the username.
+	 * @param {JSON} data Either userSession or post. It should contain 'username' and 'name'.
+	 */
+	prepareUsername(data) {
+		let name = data.name;
+		if (name === "") {
+			name = data.username;
+		}
+		return name;
 	}
 };
 

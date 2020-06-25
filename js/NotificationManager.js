@@ -20,13 +20,15 @@ module.exports =
 		 * @param {DiscourseRequestHandler} discourseRequestHandler Connection instance for the Discourse site.
 		 * @param {ModuleView} viewer Notifications are passed to this viewer.
 		 * @param {PostContentManager} postContentManager The instance that update
+		 * @param {int} updateNotificationsAfterSeconds How much time must pass before refreshing the notification list.
 		 * @param {int[]|undefined} interestedNotificationTypes The user only wants to see notifications of these types.
 		 * @param {int[]|undefined} uninterestedNotificationTypes The user does not want to see notifications of these types.
 		 */
-		constructor(discourseRequestHandler, viewer, postContentManager, interestedNotificationTypes=undefined, uninterestedNotificationTypes=undefined) {
+		constructor(discourseRequestHandler, viewer, postContentManager, updateNotificationsAfterSeconds, interestedNotificationTypes=undefined, uninterestedNotificationTypes=undefined) {
 			this.requestHandler = discourseRequestHandler;
 			this.viewer = viewer;
 			this.postContentManager = postContentManager;
+			this.updateNotificationsAfterSeconds = updateNotificationsAfterSeconds;
 			this.lastNotificationId = 0;
 			this.lastAmountOfUnreadNotifications = 0;
 			this.unreadNotifications = [];
@@ -79,7 +81,7 @@ module.exports =
 				//No notifications. Check again later.
 				this.lastNotificationId = sessionInformation.seen_notification_id;
 				this.viewer.showLoggedInUser(sessionInformation);
-				setTimeout(() => this.checkForUnseenNotifications(), 10000);
+				setTimeout(() => this.checkForUnseenNotifications(), this.updateNotificationsAfterSeconds * 1000);
 				return;
 			}
 
@@ -88,19 +90,19 @@ module.exports =
 				this.lastNotificationId !== sessionInformation.seen_notification_id ||
 				this.lastAmountOfUnreadNotifications !== sessionInformation.unread_notifications
 			) {
-				this.UpdateListOfNotifications();
+				this.updateListOfNotifications();
 				this.lastNotificationId = sessionInformation.seen_notification_id;
 				this.lastAmountOfUnreadNotifications = sessionInformation.unread_notifications;
 			} else {
 				//Don't update the Viewer.
-				setTimeout(() => this.checkForUnseenNotifications(), 10000);
+				setTimeout(() => this.checkForUnseenNotifications(), this.updateNotificationsAfterSeconds * 1000);
 			}
 		}
 
 		/**
 		 * Create a list of all unread notifications.
 		 */
-		async UpdateListOfNotifications() {
+		async updateListOfNotifications() {
 			//Save list of notifications + load notifications in the background + lastReadNotificationsId
 			let notifications;
 			try {
@@ -137,7 +139,7 @@ module.exports =
 			this.postContentManager.loadContent(Object.keys(this.postsToBeDownloaded));
 
 			this.viewer.setListOfNotifications(this.unreadNotifications, this.unreadLikes)
-			setTimeout(() => this.checkForUnseenNotifications(), 10000);
+			setTimeout(() => this.checkForUnseenNotifications(), this.updateNotificationsAfterSeconds * 1000);
 
 		}
 
@@ -148,11 +150,10 @@ module.exports =
 			return this.interestingNotificationTypes.includes(notification.notification_type);
 		}
 
-		/**
+		/** Show an error on the viewer
 		 * @param {Error} error
 		 */
 		showRequestError(error) {
-			//FIXME Try to catch specific errors, like: "413: Too many requests", "403: Forbidden source" or "5xx: Internal server error".
 			this.viewer.showError(error.message);
 		}
 

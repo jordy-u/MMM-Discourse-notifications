@@ -34,6 +34,7 @@
     "karma-jasmine": "^3.3.1"
   },
   "dependencies": {
+    "get-website-favicon": "0.0.7",
     "html-element": "^2.3.1",
     "node-fetch": "^2.6.0",
     "underscore": "^1.10.2"
