@@ -53,6 +53,7 @@ class ModuleView {
 			logo.setAttribute("id", "logo");
 			GetFavicons(site).then(data=>{
 				logo.src = data.icons[1].src;
+				this.node_helper.displayNewNotification(this);
 			});
 		}
 
