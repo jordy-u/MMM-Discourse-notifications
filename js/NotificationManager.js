@@ -88,7 +88,7 @@ module.exports =
 				this.lastNotificationId !== sessionInformation.seen_notification_id ||
 				this.lastAmountOfUnreadNotifications !== sessionInformation.unread_notifications
 			) {
-				this.UpdateListOfNotifications();
+				this.updateListOfNotifications();
 				this.lastNotificationId = sessionInformation.seen_notification_id;
 				this.lastAmountOfUnreadNotifications = sessionInformation.unread_notifications;
 			} else {
@@ -100,7 +100,7 @@ module.exports =
 		/**
 		 * Create a list of all unread notifications.
 		 */
-		async UpdateListOfNotifications() {
+		async updateListOfNotifications() {
 			//Save list of notifications + load notifications in the background + lastReadNotificationsId
 			let notifications;
 			try {
@@ -148,7 +148,7 @@ module.exports =
 			return this.interestingNotificationTypes.includes(notification.notification_type);
 		}
 
-		/**
+		/** Show an error on the viewer
 		 * @param {Error} error
 		 */
 		showRequestError(error) {

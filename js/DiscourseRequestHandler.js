@@ -3,6 +3,11 @@ const fetch = require("node-fetch");
 module.exports =
 	class DiscourseRequestHandler {
 
+		site;
+		userApiKey;
+		GETRequestParameters;
+		username;
+
 		constructor(site, userApiKey) {
 			this.site = "https://" + site;
 			this.userApiKey = userApiKey;

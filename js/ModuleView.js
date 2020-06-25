@@ -77,11 +77,14 @@ class ModuleView {
 		titleContainer.appendChild(this.userAvatar);
 		titleContainer.appendChild(this.notificationHeader);
 	}
-
+	/** Return the HTML-string of the current notification
+	 */
 	getNotificationHTML() {
 		return this.moduleContainer.outerHTML;
 	};
 
+	/** Prepair the next notification and show it on the viewer.
+	 */
 	showNextNotification() {
 
 		if (_.isEmpty(this.queuedNotifications)) {
@@ -153,7 +156,7 @@ class ModuleView {
 
 		//Stop the last timer, to be sure there is only one active timer.
 		clearInterval(this.nextNotificationTimer);
-		this.nextNotificationTimer = setInterval(() => { this.showNextNotification(); }, 3000);
+		this.nextNotificationTimer = setInterval(() => { this.showNextNotification(); }, 6000);
 	}
 
 	/**

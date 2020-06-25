@@ -34,6 +34,10 @@ module.exports = NodeHelper.create({
 		this.sendSocketNotification("ADD_FEED", {"test":"test"});
 	},
 
+	/** Handle received socket-notifications.
+	 * @param {String} notification socket-notification name.
+	 * @param {Object} payload Date Any data to be sent alongside the socket-notification. It can by any data type.
+	 */
 	socketNotificationReceived: function(notification, payload) {
 		console.log("notification: "+notification);
 		switch(notification) {
@@ -46,6 +50,9 @@ module.exports = NodeHelper.create({
 		}
 	},
 
+	/** Send the new notification to the mirror.
+	 * @param {ModuleView} moduleView The viewer that generates the HTML for the next notification.
+	 */
 	displayNewNotification: function (moduleView) {
 		this.sendSocketNotification("NEXT_NOTIFICATION", moduleView.getNotificationHTML());
 
