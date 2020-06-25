@@ -28,7 +28,7 @@ module.exports = NodeHelper.create({
 	start: function() {
 		console.log("start");
 
-		moduleView = new ModuleView(this, postContentManager, site);
+		moduleView = new ModuleView(this, postContentManager, site, true);
 		nm = new NotificationManager(robotExchangeConnection, moduleView, postContentManager);
 
 		this.sendSocketNotification("ADD_FEED", {"test":"test"});
@@ -42,7 +42,7 @@ module.exports = NodeHelper.create({
 		console.log("notification: "+notification);
 		switch(notification) {
 		case "DO_YOUR_JOB":
-			console.log("Recieved: DO_YOUR_JOB");
+			console.log("received: DO_YOUR_JOB");
 			nm.start();
 			this.sendSocketNotification("I_DID", "");
 			//this.sendSocketNotification("I_DID", moduleView.testFuntionForCall());

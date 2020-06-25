@@ -2,6 +2,7 @@ const _ = require('underscore')
 var document = require('html-element').document;
 const Node_Helper = require("./../node_helper");
 const NotificationType = require("./NotificationType");
+const GetFavicons = require('get-website-favicon')
 
 module.exports =
 class ModuleView {
@@ -30,8 +31,9 @@ class ModuleView {
 	 * @param {Node_Helper} node_helper
 	 * @param {PostContentManager} postContentManager
 	 * @param {String} site
+	 * @param {boolean} showIcon When true, the favicon of the website is shown next to the notifications.
 	 */
-	constructor(node_helper, postContentManager, site) {
+	constructor(node_helper, postContentManager, site, showIcon) {
 		this.node_helper = node_helper;
 		this.postContentManager = postContentManager;
 		this.site = site;
@@ -40,11 +42,14 @@ class ModuleView {
 		this.moduleContainer = document.createElement("div");
 		this.moduleContainer.setAttribute("id", "myModuleContainer");
 
-		// Create thuas logo
-		let logo = document.createElement("img");
-		logo.setAttribute("id", "logo");
-		// Update logo value
-		logo.src = "https://i.imgur.com/ux2ukmy.png";
+		let logo;
+		if (showIcon) {
+			logo = document.createElement("img");
+			logo.setAttribute("id", "logo");
+			GetFavicons(site).then(data=>{
+				logo.src = data.icons[1].src;
+			});
+		}
 
 		// Create message container
 		let messageContainer = document.createElement("div");
@@ -70,7 +75,7 @@ class ModuleView {
 		this.message.innerHTML = "...";
 
 		// Set the children for elements
-		this.moduleContainer.appendChild(logo);
+		if (showIcon) this.moduleContainer.appendChild(logo);
 		this.moduleContainer.appendChild(messageContainer);
 		messageContainer.appendChild(titleContainer);
 		messageContainer.appendChild(this.message);
