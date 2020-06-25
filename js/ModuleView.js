@@ -114,7 +114,7 @@ class ModuleView {
 			if (typeof notificationContent !== "object") {
 				return;
 			}
-			avatarUrl = `https://${this.site}${notificationContent.avatar_template.replace("{size}", "45")}`;
+			avatarUrl = this.prepareAvatarUrl(notificationContent.avatar_template);
 		}
 
 		//Remove notification from queue.
@@ -190,11 +190,36 @@ class ModuleView {
 	showLoggedInUser(userSession) {
 		clearInterval(this.nextNotificationTimer);
 
-		this.userAvatar.src = `https://${this.site}${userSession.current_user.avatar_template.replace("{size}", "45")}`;
-		this.notificationHeader.innerHTML = `Logged in as <a id='username'>${userSession.current_user.name}</a>`;
+		this.userAvatar.src = this.prepareAvatarUrl(userSession.current_user.avatar_template);
+
+
+		this.notificationHeader.innerHTML = `Logged in as <a id='username'>${this.prepareUsername(userSession.current_user)}</a>`;
+
 		this.message.innerHTML = `Unread notifications: ${userSession.current_user.unread_notifications}, unread high priority notifications: ${userSession.current_user.unread_high_priority_notifications}<br>unread messages: ${userSession.current_user.unread_private_messages}.`;
 
 		this.node_helper.displayNewNotification(this);
+	}
+
+	/** Generate a valid URL for the avatar.
+	 * @param {string} avatarUrl
+	 */
+	prepareAvatarUrl(avatarUrl) {
+		//Sometimes, the full url (including the domain name) is provided.
+		if (!(avatarUrl.startsWith("https://") || avatarUrl.startsWith("https://"))) {
+			avatarUrl = `https://${this.site}${avatarUrl}`;
+		}
+		return avatarUrl.replace("{size}", "45");
+	}
+
+	/** Return the display name if it is defined. Otherwise, display the username.
+	 * @param {JSON} data Either userSession or post. It should contain 'username' and 'name'.
+	 */
+	prepareUsername(data) {
+		let name = data.name;
+		if (name === "") {
+			name = data.username;
+		}
+		return name;
 	}
 };
 
