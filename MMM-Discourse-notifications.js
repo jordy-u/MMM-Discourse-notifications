@@ -1,7 +1,9 @@
 /* global Module */
 Module.register("MMM-Discourse-notifications", {
 	defaults: {
-		showIcon: true
+		showIcon: true,
+		showDurationSeconds : 6,
+		updateNotificationsAfterSeconds : 60,
 	},
 
 	start: function (){

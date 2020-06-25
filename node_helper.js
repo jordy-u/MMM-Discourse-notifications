@@ -25,7 +25,7 @@ module.exports = NodeHelper.create({
 			{ //This { } block gets rid of the ES-Lint error: Disallow lexical declarations in case/default clauses (no-case-declarations)
 				const robotExchangeConnection = new DiscourseRequestHandler(this.config.site, this.config.userApiKey);
 				const postContentManager = new PostContentManager(robotExchangeConnection);
-				const moduleView = new ModuleView(this, postContentManager, this.config.site, this.config.showIcon, payload.id);
+				const moduleView = new ModuleView(this, postContentManager, this.config.site, this.config.showIcon, payload.id, this.config.showDurationSeconds);
 
 				if (this.config.userApiKey === undefined) {
 					moduleView.showError("<a id='important'>userApiKey</a> is not defined in config.js. Read the ReadMe for setup instructions.");
@@ -44,7 +44,7 @@ module.exports = NodeHelper.create({
 					break;
 				}
 
-				const nm = new NotificationManager(robotExchangeConnection, moduleView, postContentManager);
+				const nm = new NotificationManager(robotExchangeConnection, moduleView, postContentManager, this.config.updateNotificationsAfterSeconds);
 				nm.start();
 			}
 			break;

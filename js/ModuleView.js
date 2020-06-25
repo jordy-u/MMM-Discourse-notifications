@@ -34,12 +34,14 @@ class ModuleView {
 	 * @param {String} site
 	 * @param {boolean} showIcon When true, the favicon of the website is shown next to the notifications.
 	 * @param {String} id Random generated ID. Now multiple instances of the module can be used.
+	 * @param {int} showDurationSeconds How long a notification should stay on the screen before being refreshed.
 	 */
-	constructor(node_helper, postContentManager, site, showIcon, id) {
+	constructor(node_helper, postContentManager, site, showIcon, id, showDurationSeconds) {
 		this.node_helper = node_helper;
 		this.postContentManager = postContentManager;
 		this.site = site;
 		this.id = id;
+		this.showDurationSeconds = showDurationSeconds;
 
 		// Create my module container
 		this.moduleContainer = document.createElement("div");
@@ -167,7 +169,7 @@ class ModuleView {
 
 		//Stop the last timer, to be sure there is only one active timer.
 		clearInterval(this.nextNotificationTimer);
-		this.nextNotificationTimer = setInterval(() => { this.showNextNotification(); }, 6000);
+		this.nextNotificationTimer = setInterval(() => { this.showNextNotification(); }, this.showDurationSeconds);
 	}
 
 	/**
