@@ -97,7 +97,7 @@ class ModuleView {
 		};
 	};
 
-	/** Prepair the next notification and show it on the viewer.
+	/** Prepare the next notification and show it on the viewer.
 	 */
 	showNextNotification() {
 
@@ -145,6 +145,11 @@ class ModuleView {
 		case NotificationType.group_mentioned:
 			notificationHeaderText = `<a id='username'>${nextNotification.data.original_username}</a> mentioned <a id='username'>${nextNotification.data.group_name}</a> in: <a id='important'>${nextNotification.data.topic_title}</a>`;
 			messageText = notificationContent.cooked.replace(/<\/?[^>]+(>|$)/g, "");
+			break;
+		case NotificationType.liked_consolidated:
+			//No avatar, because avatars URL's are only stored in posts. This could be fixed by getting the url from request: https://{site}/users/{user} --> user.avatar_template
+			notificationHeaderText = `<a id='username'>${nextNotification.data.original_username}</a> liked <a id='important'>${nextNotification.data.count}</a> of your posts.`;
+			messageText = `For example, in this thread: <a id='important'>${nextNotification.data.topic_title}</a>`;
 			break;
 		default:
 			notificationHeaderText = `You've got a new notification.`

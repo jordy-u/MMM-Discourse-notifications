@@ -10,6 +10,7 @@ module.exports =
 		postContentManager;
 		lastNotificationId;
 		lastAmountOfUnreadNotifications;
+		lastAmountOfUnreadHighPriorityNotifications
 		unreadNotifications;
 		unreadLikes;
 		postsToBeDownloaded;
@@ -31,6 +32,7 @@ module.exports =
 			this.updateNotificationsAfterSeconds = updateNotificationsAfterSeconds;
 			this.lastNotificationId = 0;
 			this.lastAmountOfUnreadNotifications = 0;
+			this.lastAmountOfUnreadHighPriorityNotifications = 0;
 			this.unreadNotifications = [];
 			this.unreadLikes = [];
 			this.postsToBeDownloaded = {}; // A lists of threads and their posts that need to be loaded. Multiple posts of a single thread can be loaded at the same time.
@@ -76,10 +78,11 @@ module.exports =
 			//Check if there are any unread notifications at all.
 			if (
 				sessionInformation.current_user.unread_notifications === 0 &&
-				sessionInformation.current_user.unread_private_messages === 0
+				sessionInformation.current_user.unread_private_messages === 0 &&
+				sessionInformation.current_user.unread_high_priority_notifications === 0
 			) {
 				//No notifications. Check again later.
-				this.lastNotificationId = sessionInformation.seen_notification_id;
+				this.lastNotificationId = sessionInformation.current_user.seen_notification_id;
 				this.viewer.showLoggedInUser(sessionInformation);
 				setTimeout(() => this.checkForUnseenNotifications(), this.updateNotificationsAfterSeconds * 1000);
 				return;
@@ -87,12 +90,14 @@ module.exports =
 
 			//Check for new unread notifications.
 			if (
-				this.lastNotificationId !== sessionInformation.seen_notification_id ||
-				this.lastAmountOfUnreadNotifications !== sessionInformation.unread_notifications
+				this.lastNotificationId !== sessionInformation.current_user.seen_notification_id ||
+				this.lastAmountOfUnreadNotifications !== sessionInformation.current_user.unread_notifications ||
+				this.lastAmountOfUnreadHighPriorityNotifications !== sessionInformation.current_user.unread_high_priority_notifications
 			) {
 				this.updateListOfNotifications();
-				this.lastNotificationId = sessionInformation.seen_notification_id;
-				this.lastAmountOfUnreadNotifications = sessionInformation.unread_notifications;
+				this.lastNotificationId = sessionInformation.current_user.seen_notification_id;
+				this.lastAmountOfUnreadNotifications = sessionInformation.current_user.unread_notifications;
+				this.lastAmountOfUnreadHighPriorityNotifications = sessionInformation.current_user.unread_high_priority_notifications;
 			} else {
 				//Don't update the Viewer.
 				setTimeout(() => this.checkForUnseenNotifications(), this.updateNotificationsAfterSeconds * 1000);
@@ -113,6 +118,9 @@ module.exports =
 				return;
 			}
 
+			let orderedListOfThreads = [];
+			this.unreadNotifications = []; //empty the array
+
 			//Copy unread notifications.
 			for (const notification of notifications.notifications) {
 				if (notification.read === false) {
@@ -129,6 +137,7 @@ module.exports =
 
 					//If the post has a message, add it to the download list.
 					if (notification.topic_id !== null) {
+						if (!orderedListOfThreads.includes(notification.topic_id)) {orderedListOfThreads.push(notification.topic_id);}
 						if (this.postsToBeDownloaded[notification.topic_id] === undefined) {this.postsToBeDownloaded[notification.topic_id] = [];}
 						this.postsToBeDownloaded[notification.topic_id].push(notification.data.original_post_id);
 					}
@@ -136,7 +145,7 @@ module.exports =
 			}
 
 			this.postContentManager.updatePostList(this.postsToBeDownloaded);
-			this.postContentManager.loadContent(Object.keys(this.postsToBeDownloaded));
+			this.postContentManager.loadContent(orderedListOfThreads);
 
 			this.viewer.setListOfNotifications(this.unreadNotifications, this.unreadLikes)
 			setTimeout(() => this.checkForUnseenNotifications(), this.updateNotificationsAfterSeconds * 1000);
