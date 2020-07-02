@@ -58,9 +58,28 @@ class PostContentManager {
 	loadContent(orderedListOfThreads) {
 		this.queuedThreads = orderedListOfThreads;
 
+		this.removeLoadedThreads();
+
 		//Stop the last downloadTimer, to be sure there is only one active timer.
 		clearInterval(this.downloadTimer);
 		this.downloadTimer = setInterval(() => { this.loadNextQueuedThread(); }, 4000);
+	}
+
+	/**
+	 * Remove threads from this.queuedThreads if all posts have already been loaded, so they are not requested again.
+	 */
+	removeLoadedThreads() {
+		for (const threadId of this.queuedThreads) {
+			let allPostsInThreadAreLoaded = true;
+			for (const postId in this.postContent[threadId].posts) {
+				if (_.isEmpty(this.postContent[threadId].posts[postId])) {
+					allPostsInThreadAreLoaded = false;
+					break;
+				}
+			}
+
+			if (allPostsInThreadAreLoaded) this.queuedThreads.splice(threadId);
+		}
 	}
 
 	/** Download the next thread, if there is unloaded data.
@@ -105,7 +124,8 @@ class PostContentManager {
 			if (this.postContent[thread] === undefined) {continue;}
 
 			for (let [postId, postContent] of Object.entries(this.postContent[thread].posts)) {
-				if (!posts.includes(postId)) {
+				const postIdInt = parseInt(postId);
+				if (!posts.includes(postIdInt)) {
 					delete this.postContent[thread].posts[postId];
 				}
 			}

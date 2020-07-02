@@ -119,6 +119,7 @@ module.exports =
 			}
 
 			let orderedListOfThreads = [];
+			this.unreadNotifications = []; //empty the array
 
 			//Copy unread notifications.
 			for (const notification of notifications.notifications) {
