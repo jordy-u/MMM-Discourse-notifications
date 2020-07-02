@@ -162,7 +162,6 @@ class PostContentManager {
 	 * @return {Object|undefined} The requested content. If it is not downloaded yet, return undefined.
 	 */
 	getPostContent(threadId, postId) {
-		//FIXME Throws don't work in async threads.
 		if (this.postContent[threadId] === undefined) { return Error("Thread undefined"); }
 		if (this.postContent[threadId].posts[postId] === undefined) { return Error("Post undefined"); }
 		if (_.isEmpty(this.postContent[threadId].posts[postId])) { return undefined; }
