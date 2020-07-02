@@ -60,7 +60,7 @@ class PostContentManager {
 
 		//Stop the last downloadTimer, to be sure there is only one active timer.
 		clearInterval(this.downloadTimer);
-		this.downloadTimer = setInterval(() => { this.loadNextQueuedThread(); }, 3000);
+		this.downloadTimer = setInterval(() => { this.loadNextQueuedThread(); }, 4000);
 	}
 
 	/** Download the next thread, if there is unloaded data.
