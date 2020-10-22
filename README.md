@@ -36,9 +36,11 @@ You can install the module in one of the 2 ways.
 #### A: Install using NPM
 The NPM package comes soon. For now, use the other method.
 #### B: Install using Git clone
-Go to your modules folder: `{MagicMirrorPath}/modules/` and use:
+Go to your modules folder: `{MagicMirrorPath}/modules/` and use the follow commands to download the module and its dependencies.
 ```
 git clone https://github.com/jordy-u/MMM-Discourse-notifications.git
+cd MMM-Discourse-notifications
+npm install
 ```
 ### Configuration
 Add the following code to `config.json` in `modules[ ... ]`:
